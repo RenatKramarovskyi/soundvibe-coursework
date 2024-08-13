@@ -1,0 +1,16 @@
+{
+    "name": "soundvibe/be",
+    "type": "project",
+    "authors": [
+        {
+            "name": "ya"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Framework\\": "framework/",
+            "App\\": "src/"
+        }
+    },
+    "require": {}
+}

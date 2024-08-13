@@ -1,0 +1,84 @@
+services:
+  be:
+    container_name: ${PROJECT_NAME}-be
+    build:
+      context: ./docker/be
+    restart: unless-stopped
+    volumes:
+      - ./be:${BE_DIRECTORY}
+      - ./docker/be/config/docker-xdebug.ini:/usr/local/etc/php/conf.d/docker-xdebug.ini
+    environment:
+      XDEBUG_SESSION: 1
+      XDEBUG_MODE: debug, develop
+      PHP_IDE_CONFIG: "serverName=Docker"
+    networks:
+      soundvibe:
+        ipv4_address: ${BE_IPV4}
+
+  mysql:
+    container_name: ${PROJECT_NAME}-mysql
+    image: mysql:8.3
+    restart: unless-stopped
+    volumes:
+      - mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    hostname: mysql.docker
+    networks:
+      soundvibe:
+        ipv4_address: ${MYSQL_IPV4}
+
+  fe:
+    container_name: ${PROJECT_NAME}-fe
+    build:
+      context: fe
+      dockerfile: ../docker/fe/Dockerfile
+    restart: unless-stopped
+    command: npm start
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./fe:${FE_DIRECTORY}
+    environment:
+      NODE_ENV: dev
+      CHOKIDAR_USEPOLLING: true
+      WDS_SOCKET_PORT: 0
+    networks:
+      soundvibe:
+        ipv4_address: ${FE_IPV4}
+
+  nginx:
+    container_name: ${PROJECT_NAME}-nginx
+    build:
+      context: ./docker/nginx
+    restart: unless-stopped
+    volumes:
+      - ./docker/certs/local:/etc/nginx/certs
+      - ./be:${BE_DIRECTORY}
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      NGINX_CERT_CRT: ${NGINX_CERT_CRT_LOCAL}
+      NGINX_CERT_KEY: ${NGINX_CERT_KEY_LOCAL}
+      BE_DIRECTORY: ${BE_DIRECTORY}
+      FE_DIRECTORY: ${FE_DIRECTORY}
+    networks:
+      soundvibe:
+        ipv4_address: ${NGINX_IPV4}
+
+volumes:
+  mysql:
+
+networks:
+  soundvibe:
+    driver: "bridge"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.24.0.0/16
