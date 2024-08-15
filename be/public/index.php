@@ -1,5 +1,9 @@
 <?php
 
+use Framework\Core;
+
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$r = new \Framework\HTTP\Response();
+$core = new Core();
+
+echo $core->handle();
