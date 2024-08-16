@@ -28,7 +28,7 @@ class RequestParser
         if(!str_starts_with($path, $globalPrefix)){
             throw new \Exception("Path \"" . $path ."\" does not starts with global prefix" . $globalPrefix);
         }
-        $path = substr($path, strlen($globalPrefix));
+        $path = rtrim(substr($path, strlen($globalPrefix)), "/");
 
         $protocol = empty($_SERVER["HTTPS"]) ? "http" : "https" ;
 
