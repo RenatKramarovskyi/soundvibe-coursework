@@ -232,7 +232,7 @@ class Route
         $controllerInstance = new $controllerName();
 
         $reflectionMethod = new ReflectionMethod($controllerName, $this->getMethod());
-        return   $reflectionMethod->invokeArgs($controllerInstance, $this->prepareParams($request->getPath()));
+        return $reflectionMethod->invokeArgs($controllerInstance, $this->prepareParams($request->getPath()));
     }
 
 }
