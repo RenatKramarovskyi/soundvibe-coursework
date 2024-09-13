@@ -5,8 +5,14 @@ use Framework\Core;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$core = new Core();
 
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->Load();
+
+
+
+$core = new Core();
 echo $core->handle();
 
 

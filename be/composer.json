@@ -12,5 +12,8 @@
             "App\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+      "ext-pdo": "*",
+        "vlucas/phpdotenv": "^5.6"
+    }
 }
