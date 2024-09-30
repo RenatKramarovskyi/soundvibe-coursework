@@ -22,19 +22,17 @@ class UserController extends BaseController
         $users = Context::$connection->execute($sql);
         return new JsonResponse($users);
     }
-
     #[Route(
         name: "create-user",
-        path: "/user/create",
+        path: "/user",
         methods: [Request::METHOD_POST]
     )]
     public function createUser(): Response
     {
         $body = Context::$request->getContent();
-
         $user = [
             "username" => $body["username"],
-            "sex" => $body["sex"]
+            "sex" => $body["sex"] ? 1 : 0
         ];
 
         $sql = "INSERT INTO user (username, sex) VALUES (:username, :sex)";

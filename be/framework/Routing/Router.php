@@ -81,24 +81,26 @@ class Router
     public static function validateRoutesList(array $routes): void
     {
         $names = [];
-        $regexes = [];
+        $paths = [];
 
         /** @var Route $route */
         foreach ($routes as $route){
-            $methodID = $route->getController() . "->" . $route->getMethod();
-
+            $handlerId = $route->getController() . "->" . $route->getMethod();
 
             if (isset($names[$route->getName()])) {
                 throw new Exception("Multiple definitions for route with name \" {$route->getName()} \" ");
             }
 
-            if (isset($regexes[$route->getPathRegex()]) && $regexes[$route->getPathRegex()] !== $methodID ) {
-                throw new Exception("Multiple definitions for route with path \" {$route->getPath()} \" ");
+            foreach ($route->getMethods() as $httpMethod){
+                $pathSignature = $httpMethod . "->" . $route->getPathRegex();
+
+                if (isset($paths[$pathSignature]) && $paths[$pathSignature] !== $handlerId ) {
+                    throw new Exception("Multiple definitions for route with path {$httpMethod} \" {$route->getPath()} \" ");
+                }
+
+                $paths[$pathSignature] = $handlerId;
             }
-
-            $names[$route->getName()] = $methodID;
-            $regexes[$route->getPathRegex()] = $methodID;
-
+            $names[$route->getName()] = $handlerId;
         }
     }
 
