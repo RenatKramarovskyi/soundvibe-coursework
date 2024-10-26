@@ -7,19 +7,31 @@ use PDO;
 
 class Connection
 {
+    /**
+     * @var PDO|null
+     */
     public ?PDO $pdo;
 
 
+    /**
+     *
+     */
     public function __construct()
     {
         $this->pdo = null;
     }
 
+    /**
+     * @return bool
+     */
     public function isConnected() : bool
     {
         return $this->pdo !== null;
     }
 
+    /**
+     * @return void
+     */
     public function connect() : void
     {
         $options =  [
@@ -29,6 +41,12 @@ class Connection
         $this->pdo = new PDO($_ENV["DB_URL"], $_ENV["DB_USER"], $_ENV["DB_PASSWORD"], $options);
     }
 
+    /**
+     * @param string $query
+     * @param array $params
+     * @return array
+     * @throws Exception
+     */
     public function execute(string $query, array $params = []) : array
     {
         if(!$this->isConnected()){
@@ -40,6 +58,7 @@ class Connection
         foreach ($params as $key => $value) {
             $sth->bindValue($key, $value);
         }
+
         $sth->execute();
 
         return $sth->fetchAll();
