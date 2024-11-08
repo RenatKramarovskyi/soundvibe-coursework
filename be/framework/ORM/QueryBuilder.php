@@ -2,6 +2,8 @@
 
 namespace Framework\ORM;
 
+use Exception;
+
 class QueryBuilder
 {
     /**
@@ -92,15 +94,15 @@ class QueryBuilder
     }
 
     /**
-     * @param string $table
+     * @param string $into
      * @param array $columns
      * @return $this
      * @throws \Exception
      */
-    public function insert(string $table, array $columns = []) : self
+    public function insert(string $into, array $columns = []) : self
     {
         $this->query->setType(Query::TYPE_INSERT)
-            ->setTable($table)
+            ->setTable($into)
             ->setColumns($columns);
 
         return $this;
@@ -108,13 +110,15 @@ class QueryBuilder
 
     /**
      * @param string $table
+     * @param array $columns
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
-    public function update(string $table) : self
+    public function update(string $table, array $columns) : self
     {
         $this->query->setType(Query::TYPE_UPDATE)
-            ->setTable($table);
+            ->setTable($table)
+            ->setColumns($columns);
 
         return $this;
     }

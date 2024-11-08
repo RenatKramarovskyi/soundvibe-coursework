@@ -42,20 +42,21 @@ class Connection
     }
 
     /**
-     * @param string $query
-     * @param array $params
+     * @param Query $q
      * @return array
      * @throws Exception
      */
-    public function execute(string $query, array $params = []) : array
+    public function execute(Query $q) : array
     {
         if(!$this->isConnected()){
             throw new Exception("Database connection is not initialized");
         }
 
-        $sth = $this->pdo->prepare($query);
+        $sqlGenerator = new SQLGenerator();
 
-        foreach ($params as $key => $value) {
+        $sth = $this->pdo->prepare($sqlGenerator->getSQL($q));
+
+        foreach ($q->getParams() as $key => $value) {
             $sth->bindValue($key, $value);
         }
 
