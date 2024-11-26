@@ -1,10 +1,12 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\User;
 use Framework\Context;
 use Framework\HTTP\JsonResponse;
 use Framework\HTTP\Request;
 use Framework\HTTP\Response;
+use Framework\ORM\QueryBuilder;
 use Framework\Routing\Attributes\Route;
 use Framework\Routing\Controllers\BaseController;
 
@@ -17,9 +19,9 @@ class UserController extends BaseController
     )]
     public function getAllUser(): Response
     {
-        $sql = "SELECT * FROM user";
+        $qb = new QueryBuilder();
 
-        $users = Context::$connection->execute($sql);
+        $users = Context::$connection->execute($qb->select("user")->getQuery(), User::class);
         return new JsonResponse($users);
     }
     #[Route(
