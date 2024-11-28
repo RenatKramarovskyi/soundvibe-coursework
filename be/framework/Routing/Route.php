@@ -226,13 +226,13 @@ class Route
     /**
      * @return mixed
      */
-    public function execute(Request $request) : mixed
+    public function execute(Context $context) : mixed
     {
         $controllerName = $this->getController();
         $controllerInstance = new $controllerName();
 
         $reflectionMethod = new ReflectionMethod($controllerName, $this->getMethod());
-        return $reflectionMethod->invokeArgs($controllerInstance, $this->prepareParams($request->getPath()));
+        return $reflectionMethod->invokeArgs($controllerInstance, [...$this->prepareParams($context->request->getPath()), "context" => $context]);
     }
 
 }

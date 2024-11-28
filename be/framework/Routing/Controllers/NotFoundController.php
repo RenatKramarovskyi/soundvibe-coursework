@@ -7,8 +7,8 @@ use Framework\HTTP\Response;
 
 class NotFoundController extends BaseController
 {
-    public function index() : Response
+    public function index(Context $context) : Response
     {
-        return new Response("No route found for \"" . Context::$request->getPath() . "\"", 404);
+        return new Response("No route found for \"" . $context->request->getPath() . "\"", 404);
     }
 }

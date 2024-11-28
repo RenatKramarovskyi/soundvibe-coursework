@@ -8,7 +8,7 @@ use Framework\ORM\Connection;
 
 class Context
 {
-    public static ?Request $request = null;
-    public static ?Response $response = null;
-    public static ?Connection $connection = null;
+    public ?Request $request = null;
+    public ?Response $response = null;
+    public ?Connection $connection = null;
 }

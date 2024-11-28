@@ -2,8 +2,12 @@
 
 namespace Framework\HTTP;
 
+use Closure;
 use Exception;
-class RequestParser
+use Framework\Context;
+use Framework\Handling\MiddlewareInterface;
+
+class RequestParser implements MiddlewareInterface
 {
     /**
      * @return Request
@@ -41,5 +45,11 @@ class RequestParser
             ->setUrl("$protocol://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 
         return $request;
+    }
+
+    public static function middleware(Context $context, Closure $next): void
+    {
+        $context->request = self::parseRequest();
+        $next();
     }
 }

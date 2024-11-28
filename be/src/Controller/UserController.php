@@ -5,6 +5,7 @@ use Framework\Context;
 use Framework\HTTP\JsonResponse;
 use Framework\HTTP\Request;
 use Framework\HTTP\Response;
+use Framework\ORM\QueryBuilder;
 use Framework\Routing\Attributes\Route;
 use Framework\Routing\Controllers\BaseController;
 
@@ -15,11 +16,12 @@ class UserController extends BaseController
         path: "/user",
         methods: [Request::METHOD_GET]
     )]
-    public function getAllUser(): Response
+    public function getAllUser(Context $context): Response
     {
-        $sql = "SELECT * FROM user";
+        $qb = new QueryBuilder();
+        $qb->select("user");
 
-        $users = Context::$connection->execute($sql);
+        $users = $context->connection->execute($qb->getQuery());
         return new JsonResponse($users);
     }
     #[Route(
@@ -27,17 +29,19 @@ class UserController extends BaseController
         path: "/user",
         methods: [Request::METHOD_POST]
     )]
-    public function createUser(): Response
+    public function createUser(Context $context): Response
     {
-        $body = Context::$request->getContent();
+        $body = $context->request->getContent();
         $user = [
             "username" => $body["username"],
             "sex" => $body["sex"] ? 1 : 0
         ];
 
-        $sql = "INSERT INTO user (username, sex) VALUES (:username, :sex)";
+        $qb = new QueryBuilder();
+        $qb->insert("user", ["username", "sex"])->addValues([":username",":sex"])->setParams($user);
 
-        $users = Context::$connection->execute($sql, $user);
+
+        $users = $context->connection->execute($qb->getQuery());
         return new JsonResponse($user);
     }
 }
