@@ -49,11 +49,11 @@ class UserController extends BaseController
 
         $user = [
             "username" => $body["username"],
-            "sex" => $body["sex"]
+            "sex" => (int)$body["sex"]
         ];
 
         $qb = new QueryBuilder();
-        $qb->insert("user", ["username", "sex"])->addValues([":username", ":sex"])->setParams($user);
+        $qb->insert("user", ["username", "sex"])->addValues($user);
 
         $this->connection->execute($qb->getQuery());
 

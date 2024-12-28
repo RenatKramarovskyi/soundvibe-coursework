@@ -55,7 +55,6 @@ class Connection implements ConnectionInterface
         }
 
         $sqlGenerator = new SQLGenerator();
-
         $sth = $this->pdo->prepare($sqlGenerator->getSQL($q));
 
         foreach ($q->getParams() as $key => $value) {
