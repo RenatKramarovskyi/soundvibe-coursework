@@ -2,10 +2,11 @@
 
 namespace Framework\ORM;
 
+use Closure;
 use Exception;
 use PDO;
 
-class Connection
+class Connection implements ConnectionInterface
 {
     /**
      * @var PDO|null
@@ -19,6 +20,7 @@ class Connection
     public function __construct()
     {
         $this->pdo = null;
+        $this->connect();
     }
 
     /**
@@ -64,4 +66,6 @@ class Connection
 
         return $sth->fetchAll();
     }
+
+
 }
