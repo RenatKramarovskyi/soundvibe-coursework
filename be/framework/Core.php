@@ -3,27 +3,24 @@
 namespace Framework;
 
 use Exception;
+use Framework\DependencyInjection\DependencyManager;
 use Framework\Handling\Handler;
 use Framework\Handling\MiddlewareInterface;
-use Framework\HTTP\JsonResponse;
-use Framework\HTTP\Request;
 use Framework\HTTP\RequestParser;
 use Framework\HTTP\Response;
-use Framework\ORM\Connection;
 use Framework\Routing\Router;
 
 class Core
 {
-    public Context $context;
+    public DependencyManager $dependencyManager;
     public array $handlers;
 
     public function __construct()
     {
-        $this->context = new Context();
+        $this->dependencyManager = new DependencyManager();
         $this->handlers = [];
 
         $this->use(RequestParser::class);
-        $this->use(Connection::class);
         $this->use(Router::class);
     }
 
@@ -33,9 +30,7 @@ class Core
             throw new Exception("$classname is not an implementation of " . MiddlewareInterface::class);
         }
 
-        $handler = new Handler($classname, [
-            "context" => $this->context,
-        ]);
+        $handler = new Handler($classname, $this->dependencyManager);
 
         if (count($this->handlers) > 0) {
             /** @var Handler $last */
@@ -50,6 +45,6 @@ class Core
     {
         $this->handlers[0]->execute();
 
-        return (string)$this->context->response;
+        return (string)$this->dependencyManager->getDependency(Response::class);
     }
 }

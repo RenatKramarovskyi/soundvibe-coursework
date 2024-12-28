@@ -4,11 +4,9 @@ namespace Framework\ORM;
 
 use Closure;
 use Exception;
-use Framework\Context;
-use Framework\Handling\MiddlewareInterface;
 use PDO;
 
-class Connection implements MiddlewareInterface
+class Connection implements ConnectionInterface
 {
     /**
      * @var PDO|null
@@ -22,6 +20,7 @@ class Connection implements MiddlewareInterface
     public function __construct()
     {
         $this->pdo = null;
+        $this->connect();
     }
 
     /**
@@ -68,10 +67,5 @@ class Connection implements MiddlewareInterface
         return $sth->fetchAll();
     }
 
-    public static function middleware(Context $context, Closure $next): void
-    {
-        $context->connection = new Connection();
-        $context->connection->connect();
-        $next();
-    }
+
 }

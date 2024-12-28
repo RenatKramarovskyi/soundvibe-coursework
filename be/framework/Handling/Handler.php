@@ -3,8 +3,7 @@
 namespace Framework\Handling;
 
 use Closure;
-use ReflectionException;
-use ReflectionMethod;
+use Framework\DependencyInjection\DependencyManagerInterface;
 
 class Handler
 {
@@ -12,6 +11,10 @@ class Handler
      * @var string
      */
     public string $middlewareClass;
+    /**
+     * @var DependencyManagerInterface
+     */
+    public DependencyManagerInterface $dependencyManager;
     /**
      * @var array
      */
@@ -23,12 +26,14 @@ class Handler
 
     /**
      * @param string $middlewareClass
+     * @param DependencyManagerInterface $dependencyManager
      * @param array $args
-     * @param Closure $next
+     * @param Closure|null $next
      */
-    public function __construct(string $middlewareClass, array $args, ?Closure $next = null)
+    public function __construct(string $middlewareClass, DependencyManagerInterface $dependencyManager, array $args = [], ?Closure $next = null)
     {
         $this->middlewareClass = $middlewareClass;
+        $this->dependencyManager = $dependencyManager;
         $this->args = $args;
         $this->next = $next ?? fn () => 0;
     }
@@ -89,11 +94,9 @@ class Handler
 
     /**
      * @return void
-     * @throws ReflectionException
      */
     public function execute() : void
     {
-        $reflectionMethod = new ReflectionMethod($this->middlewareClass,"middleware");
-        $reflectionMethod->invokeArgs(null, [...$this->args, "next" => $this->next]);
+        $this->dependencyManager->callFunction("middleware", $this->middlewareClass,  [...$this->args, "next" => $this->next]);
     }
 }

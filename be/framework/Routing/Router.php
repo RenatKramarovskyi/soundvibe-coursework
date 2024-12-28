@@ -4,7 +4,7 @@ namespace Framework\Routing;
 
 use Closure;
 use Exception;
-use Framework\Context;
+use Framework\DependencyInjection\DependencyManagerInterface;
 use Framework\Handling\MiddlewareInterface;
 use Framework\HTTP\Request;
 use Framework\HTTP\Response;
@@ -19,11 +19,11 @@ class Router implements MiddlewareInterface
 {
 
     /**
-     * @param Context $context
+     * @param DependencyManagerInterface $dm
      * @return void
      * @throws ReflectionException
      */
-    public static function execute(Context $context): void
+    public static function execute(DependencyManagerInterface $dm): void
     {
 
         $routes = self::buildRotesList();
@@ -38,13 +38,13 @@ class Router implements MiddlewareInterface
         );
 
         foreach ($routes as $route){
-            if($route->matches($context->request)){
+            if($route->matches($dm->getDependency(Request::class))){
                 $matchedRoute = $route;
                 break;
             }
         }
 
-        $context->response =  $matchedRoute->execute($context);
+        $dm->setDependency(Response::class, $matchedRoute->execute($dm));
     }
 
     /**
@@ -151,9 +151,9 @@ class Router implements MiddlewareInterface
         return $routes;
     }
 
-    public static function middleware(Context $context, Closure $next): void
+    public static function middleware(DependencyManagerInterface $dm, Closure $next): void
     {
-        self::execute($context);
+        self::execute($dm);
         $next();
     }
 }

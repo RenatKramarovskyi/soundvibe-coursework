@@ -2,13 +2,13 @@
 
 namespace Framework\Routing\Controllers;
 
-use Framework\Context;
+use Framework\HTTP\Request;
 use Framework\HTTP\Response;
 
 class NotFoundController extends BaseController
 {
-    public function index(Context $context) : Response
+    public function index(Request $request) : Response
     {
-        return new Response("No route found for \"" . $context->request->getPath() . "\"", 404);
+        return new Response("No route found for \"" . $request->getPath() . "\"", 404);
     }
 }

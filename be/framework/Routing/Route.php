@@ -2,10 +2,8 @@
 
 namespace Framework\Routing;
 
-use Framework\Context;
+use Framework\DependencyInjection\DependencyManagerInterface;
 use Framework\HTTP\Request;
-use http\Params;
-use ReflectionMethod;
 
 /**
  *
@@ -224,15 +222,14 @@ class Route
     }
 
     /**
+     * @param DependencyManagerInterface $dm
      * @return mixed
      */
-    public function execute(Context $context) : mixed
+    public function execute(DependencyManagerInterface $dm) : mixed
     {
-        $controllerName = $this->getController();
-        $controllerInstance = new $controllerName();
 
-        $reflectionMethod = new ReflectionMethod($controllerName, $this->getMethod());
-        return $reflectionMethod->invokeArgs($controllerInstance, [...$this->prepareParams($context->request->getPath()), "context" => $context]);
+        $params = $this->prepareParams($dm->getDependency(Request::class)->getPath());
+        return $dm->callFunction($this->getMethod(), $this->getController(), $params);
     }
 
 }

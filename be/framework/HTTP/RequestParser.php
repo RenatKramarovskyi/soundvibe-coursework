@@ -4,19 +4,20 @@ namespace Framework\HTTP;
 
 use Closure;
 use Exception;
-use Framework\Context;
+use Framework\DependencyInjection\DependencyManagerInterface;
 use Framework\Handling\MiddlewareInterface;
 
 class RequestParser implements MiddlewareInterface
 {
     /**
-     * @return Request
+     * @param DependencyManagerInterface $dm
+     * @return void
      * @throws Exception
      */
-    public static function parseRequest() : Request
+    public static function parseRequest(DependencyManagerInterface $dm) : void
     {
 
-        $request = new Request();
+        $request = $dm->getDependency(Request::class);
         $headers = getallheaders();
         $content = null;
 
@@ -43,13 +44,11 @@ class RequestParser implements MiddlewareInterface
             ->setContent($content)
             ->setPath($path)
             ->setUrl("$protocol://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-
-        return $request;
     }
 
-    public static function middleware(Context $context, Closure $next): void
+    public static function middleware(DependencyManagerInterface $dependencyManager, Closure $next): void
     {
-        $context->request = self::parseRequest();
+        self::parseRequest($dependencyManager);
         $next();
     }
 }

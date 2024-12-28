@@ -3,14 +3,14 @@
 namespace Framework\Handling;
 
 use Closure;
-use Framework\Context;
+use Framework\DependencyInjection\DependencyManagerInterface;
 
 interface MiddlewareInterface
 {
     /**
-     * @param Context $context
+     * @param DependencyManagerInterface $dependencyManager
      * @param Closure $next
      * @return void
      */
-    public static function middleware(Context $context, Closure $next): void;
+    public static function middleware(DependencyManagerInterface $dependencyManager, Closure $next): void;
 }
