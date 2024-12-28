@@ -2,25 +2,30 @@
 
 namespace Framework\Routing;
 
+use Closure;
 use Exception;
-use Framework\Context;
+use Framework\DependencyInjection\DependencyManagerInterface;
+use Framework\Handling\MiddlewareInterface;
 use Framework\HTTP\Request;
+use Framework\HTTP\Response;
 use Framework\Routing\Attributes\Route as RouteAttribute;
 use Framework\Routing\Controllers\BaseController;
 use Framework\Routing\Controllers\NotFoundController;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 
-class Router
+class Router implements MiddlewareInterface
 {
 
     /**
+     * @param DependencyManagerInterface $dm
      * @return void
+     * @throws ReflectionException
      */
-    public static function execute(): void
+    public static function execute(DependencyManagerInterface $dm): void
     {
-
-        $routes = self::buildRotesList();
+        $routes = self::buildRoutesList();
         self::validateRoutesList($routes);
 
         $matchedRoute = new Route(
@@ -31,52 +36,58 @@ class Router
             method: "index"
         );
 
-        foreach ($routes as $route){
-            if($route->matches(Context::$request)){
+
+        $request = $dm->getDependency(Request::class);
+        foreach ($routes as $route) {
+            if ($route->matches($request)) {
                 $matchedRoute = $route;
                 break;
             }
         }
 
-        Context::$response =  $matchedRoute->execute(Context::$request);
-        return;
+        $dm->setDependency(Response::class, $matchedRoute->execute($dm));
     }
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    public static function buildRotesList() : array
+    public static function buildRoutesList(): array
     {
-        $namespace = "App\\Controller";
         $directory = dirname($_SERVER["DOCUMENT_ROOT"]) . "/src/Controller/";
+        $namespace = "App\\Controller";
 
         $files = scandir($directory);
         $classes = [];
 
         foreach ($files as $file) {
-            if(in_array($file, [".", ".."])){
+            if (in_array($file, [
+                ".",
+                ".."
+            ])) {
                 continue;
             }
+
             if (!is_file($directory . $file) || pathinfo($file, PATHINFO_EXTENSION) !== "php") {
                 continue;
             }
-            $class = $namespace . "\\" . pathinfo($file, PATHINFO_FILENAME);
 
-            if (!class_exists($class) || !is_subclass_of($class, BaseController::class)){
+            $class = $namespace . "\\" . pathinfo($file, PATHINFO_FILENAME);
+            if (!class_exists($class) || !is_subclass_of($class, BaseController::class)) {
                 continue;
             }
 
             $classes[] = $class;
         }
+
         $routes = [];
 
-        foreach ($classes as $class){
+        foreach ($classes as $class) {
             $routes = array_merge($routes, self::getRoutesForClass(new ReflectionClass($class)));
         }
+
         return $routes;
     }
-
 
     public static function validateRoutesList(array $routes): void
     {
@@ -84,39 +95,41 @@ class Router
         $paths = [];
 
         /** @var Route $route */
-        foreach ($routes as $route){
-            $handlerId = $route->getController() . "->" . $route->getMethod();
+        foreach ($routes as $route) {
+            $handlerID = $route->getController() . "->" . $route->getMethod();
 
             if (isset($names[$route->getName()])) {
-                throw new Exception("Multiple definitions for route with name \" {$route->getName()} \" ");
+                throw new Exception("Multiple definitions for route with name \"" . $route->getName() . "\"");
             }
 
-            foreach ($route->getMethods() as $httpMethod){
+            foreach ($route->getMethods() as $httpMethod) {
                 $pathSignature = $httpMethod . "->" . $route->getPathRegex();
 
-                if (isset($paths[$pathSignature]) && $paths[$pathSignature] !== $handlerId ) {
-                    throw new Exception("Multiple definitions for route with path {$httpMethod} \" {$route->getPath()} \" ");
+                if (isset($paths[$pathSignature]) && $paths[$pathSignature] !== $handlerID) {
+                    throw new Exception("Multiple definitions for route with path " . $httpMethod .  " \"" . $route->getPath() . "\"");
                 }
 
-                $paths[$pathSignature] = $handlerId;
+                $paths[$pathSignature] = $handlerID;
             }
-            $names[$route->getName()] = $handlerId;
+
+            $names[$route->getName()] = $handlerID;
         }
     }
-
 
     /**
      * @param ReflectionClass $reflectionClass
      * @return array
      */
-    public static function getRoutesForClass(ReflectionClass $reflectionClass) : array
+    public static function getRoutesForClass(ReflectionClass $reflectionClass): array
     {
         $routes = [];
+
         $reflectionMethods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
-        foreach ($reflectionMethods as $reflectionMethod){
-             $routes = array_merge($routes, self::getRoutesForMethod($reflectionMethod));
+        foreach ($reflectionMethods as $reflectionMethod) {
+            $routes = array_merge($routes, self::getRoutesForMethod($reflectionMethod));
         }
+
         return $routes;
     }
 
@@ -124,14 +137,14 @@ class Router
      * @param ReflectionMethod $reflectionMethod
      * @return array
      */
-    public static function getRoutesForMethod(ReflectionMethod $reflectionMethod) : array
+    public static function getRoutesForMethod(ReflectionMethod $reflectionMethod): array
     {
         $routes = [];
-        $reflectionsAttributes = $reflectionMethod->getAttributes(RouteAttribute::class);
+        $reflectionAttributes = $reflectionMethod->getAttributes(RouteAttribute::class);
 
-        foreach ($reflectionsAttributes as $reflectionsAttribute) {
+        foreach ($reflectionAttributes as $reflectionAttribute) {
             /** @var RouteAttribute $routeAttribute */
-            $routeAttribute = $reflectionsAttribute->newInstance();
+            $routeAttribute = $reflectionAttribute->newInstance();
 
             $route = new Route(
                 name: $routeAttribute->getName(),
@@ -143,7 +156,14 @@ class Router
 
             $routes[] = $route;
         }
+
         return $routes;
+    }
+
+    public static function middleware(DependencyManagerInterface $dm, Closure $next): void
+    {
+        self::execute($dm);
+        $next();
     }
 
 }
