@@ -1,0 +1,14 @@
+Framework\DependencyInjection\DependencyManagerInterface:
+  class: Framework\DependencyInjection\DependencyManager
+
+Framework\HTTP\Request:
+
+Framework\HTTP\Response:
+
+Framework\ORM\ConnectionInterface:
+  class: Framework\ORM\Connection
+
+Framework\ORM\EntityManagerInterface:
+  class: Framework\ORM\EntityManager
+
+
