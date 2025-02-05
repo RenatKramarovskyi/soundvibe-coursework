@@ -4,6 +4,8 @@ namespace Framework\HTTP;
 
 use Closure;
 use Exception;
+use Framework\Config\Config;
+use Framework\Config\ConfigParser;
 use Framework\DependencyInjection\DependencyManagerInterface;
 use Framework\Handling\MiddlewareInterface;
 
@@ -26,7 +28,7 @@ class RequestParser implements MiddlewareInterface
             $content = json_decode(file_get_contents("php://input"), true);
         }
 
-        $globalPrefix = "/api";
+        $globalPrefix = @Config::$config["routing"]["global_prefix"] ?? "";
 
 
         $path = strstr($_SERVER["REQUEST_URI"] . "?", "?", true);

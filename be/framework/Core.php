@@ -3,6 +3,7 @@
 namespace Framework;
 
 use Exception;
+use Framework\Config\ConfigParser;
 use Framework\DependencyInjection\DependencyManager;
 use Framework\Handling\Handler;
 use Framework\Handling\MiddlewareInterface;
@@ -19,6 +20,7 @@ class Core
 
     public function __construct()
     {
+        ConfigParser::parseConfig();
         $this->dependencyManager = new DependencyManager();
         $this->handlers = [];
         $this->use(\Framework\HTTP\RequestParser::class);

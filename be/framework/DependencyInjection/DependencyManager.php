@@ -4,6 +4,7 @@ namespace Framework\DependencyInjection;
 
 use Closure;
 use Exception;
+use Framework\Config\Config;
 use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;
@@ -27,7 +28,7 @@ class DependencyManager implements DependencyManagerInterface
         $this->registry = [
             "Framework\DependencyInjection\DependencyManagerInterface" => $this
         ];
-        $this->services = @yaml_parse_file(__DIR__."/Config/services.yaml")["services"] ?: [];
+        $this->services = @Config::$config["services"] ?? [];
 
     }
 
