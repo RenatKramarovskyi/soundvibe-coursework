@@ -48,14 +48,13 @@ class Connection implements ConnectionInterface
      * @return array
      * @throws Exception
      */
-    public function execute(Query $q) : array
+    public function execute(Query $q, ?string $entityClass = null) : array
     {
         if(!$this->isConnected()){
             throw new Exception("Database connection is not initialized");
         }
 
         $sqlGenerator = new SQLGenerator();
-
         $sth = $this->pdo->prepare($sqlGenerator->getSQL($q));
 
         foreach ($q->getParams() as $key => $value) {
@@ -64,8 +63,18 @@ class Connection implements ConnectionInterface
 
         $sth->execute();
 
-        return $sth->fetchAll();
+        $result = $sth->fetchAll();
+
+        if($entityClass !== null && is_subclass_of($entityClass, BaseEntity::class)){
+            $result = array_map(
+                function ($data) use ($entityClass){
+                    $entity = new $entityClass();
+                    $entity->fromQueryResult($data);
+                    return $entity;
+                },
+                $result);
+        }
+
+        return $result;
     }
-
-
 }

@@ -10,4 +10,3 @@ $dotenv->Load();
 
 $core = new Core();
 echo $core->handle();
-

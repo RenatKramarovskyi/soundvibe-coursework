@@ -6,8 +6,10 @@ use Exception;
 use Framework\DependencyInjection\DependencyManager;
 use Framework\Handling\Handler;
 use Framework\Handling\MiddlewareInterface;
+use Framework\HTTP\Request;
 use Framework\HTTP\RequestParser;
 use Framework\HTTP\Response;
+use Framework\ORM\Connection;
 use Framework\Routing\Router;
 
 class Core
@@ -19,9 +21,8 @@ class Core
     {
         $this->dependencyManager = new DependencyManager();
         $this->handlers = [];
-
-        $this->use(RequestParser::class);
-        $this->use(Router::class);
+        $this->use(\Framework\HTTP\RequestParser::class);
+        $this->use(\Framework\Routing\Router::class);
     }
 
     public function use(string $classname): void
@@ -47,4 +48,5 @@ class Core
 
         return (string)$this->dependencyManager->getDependency(Response::class);
     }
+
 }

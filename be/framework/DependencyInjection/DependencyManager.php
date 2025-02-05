@@ -57,7 +57,7 @@ class DependencyManager implements DependencyManagerInterface
 
                 $name = $reflectionParameter->getName();
 
-                if(array_key_exists($name, @$this->services[$dependency]["arguments"])){
+                if( isset($this->services[$dependency]["arguments"]) && array_key_exists($name, $this->services[$dependency]["arguments"])){
                     $params[$name] = $this->services[$dependency]["arguments"][$name];
                     continue;
                 }
