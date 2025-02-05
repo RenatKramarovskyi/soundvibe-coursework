@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Framework\ORM\Attributes\Column;
 use Framework\ORM\Attributes\Entity;
+use Framework\ORM\Attributes\Id;
 use Framework\ORM\BaseEntity;
 use Framework\ORM\ColumnType;
 use Framework\ORM\JsonSerializable;
@@ -12,6 +13,7 @@ use Framework\ORM\JsonSerializable;
 #[Entity(repository: UserRepository::class, table: "user")]
 class User extends BaseEntity implements JsonSerializable
 {
+    #[Id]
     #[Column(type : ColumnType::INT, column: "id")]
     public ?int $id = null;
 
@@ -26,11 +28,6 @@ class User extends BaseEntity implements JsonSerializable
         return $this->id;
     }
 
-    public function setId(?int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
 
     public function getUsername(): ?string
     {

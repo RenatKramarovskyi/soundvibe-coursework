@@ -10,3 +10,6 @@ services:
   Framework\ORM\ConnectionInterface:
     class: Framework\ORM\Connection
 
+  Framework\ORM\EntityManagerInterface:
+    class: Framework\ORM\EntityManager
+

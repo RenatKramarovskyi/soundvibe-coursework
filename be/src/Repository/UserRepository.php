@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use Framework\ORM\Attributes\Repository;
 use Framework\ORM\BaseEntityRepository;
 

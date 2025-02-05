@@ -6,8 +6,8 @@ use App\Entity\User;
 use Framework\HTTP\JsonResponse;
 use Framework\HTTP\Request;
 use Framework\HTTP\Response;
-use Framework\ORM\ConnectionInterface;
-use Framework\ORM\QueryBuilder;
+use Framework\ORM\EntityManagerInterface;
+use Framework\ORM\Query;
 use Framework\Routing\Attributes\Route;
 use Framework\Routing\Controllers\BaseController;
 
@@ -15,9 +15,9 @@ class UserController extends BaseController
 {
 
     /**
-     * @param ConnectionInterface $connection
+     * @param EntityManagerInterface $em
      */
-    public function __construct(private ConnectionInterface $connection)
+    public function __construct(private EntityManagerInterface $em)
     {
     }
 
@@ -25,21 +25,13 @@ class UserController extends BaseController
     #[Route(name: "user-get-all", path: "/user", methods: [Request::METHOD_GET])]
     public function getAll(): Response
     {
-        $qb = new QueryBuilder();
-
-        $qb->select("user");
-        $users = $this->connection->execute($qb->getQuery(), User::class);
-
-        return new JsonResponse($users);
+        return new JsonResponse($this->em->getRepository(User::class)->findAll());
     }
 
     #[Route(name: "user-get-by-id", path: "/user/{id}", methods: [Request::METHOD_GET])]
-    public function getById(Request $request, string $id): Response
+    public function getById(string $id): Response
     {
-        $qb = new QueryBuilder();
-        $qb->select("user")->where("id = :id")->setParams(["id"=>$id]);
-        $user = $this->connection->execute($qb->getQuery());
-        return new JsonResponse($user);
+        return new JsonResponse($this->em->getRepository(User::class)->find($id));
     }
 
     #[Route(name: "user-create", path: "/user", methods: [Request::METHOD_POST])]
@@ -47,16 +39,20 @@ class UserController extends BaseController
     {
         $body = $request->getContent();
 
-        $user = [
-            "username" => $body["username"],
-            "sex" => (int)$body["sex"]
-        ];
+        $user = new User();
+        $user->setUsername($body["username"])
+            ->setSex($body["sex"]);
 
-        $qb = new QueryBuilder();
-        $qb->insert("user", ["username", "sex"])->addValues($user);
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->connection->execute($qb->getQuery());
+        $criteria = $user->getStateSnapshot();
+        unset($criteria[$user->getIdColumn()]);
 
-        return new JsonResponse($user);
+        return new JsonResponse($this->em->getRepository(User::class)->findOneBy($criteria, orderBy: [
+            $user->getIdColumn(),
+            Query::ORDER_DESC
+        ]));
     }
+
 }
