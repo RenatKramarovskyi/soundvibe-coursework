@@ -1,1 +1,6 @@
 global_prefix: ""
+
+cors:
+  allow_origin: "*"
+  allow_methods: "POST, GET, PUT, PATCH, DELETE, OPTION"
+  allow_headers: "Authorization, Content-Type, Access-Control-Allow-Origin"

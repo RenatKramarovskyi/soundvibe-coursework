@@ -9,5 +9,8 @@ $dotenv->Load();
 
 
 $core = new Core();
+
+$core->use(Framework\HTTP\Cors::class);
+
 echo $core->handle();
 
