@@ -24,7 +24,6 @@ class Core
         $this->dependencyManager = new DependencyManager();
         $this->handlers = [];
         $this->use(\Framework\HTTP\RequestParser::class);
-        $this->use(\Framework\Routing\Router::class);
     }
 
     public function use(string $classname): void
@@ -46,6 +45,7 @@ class Core
 
     public function handle(): string
     {
+        $this->use(\Framework\Routing\Router::class);
         $this->handlers[0]->execute();
 
         return (string)$this->dependencyManager->getDependency(Response::class);
