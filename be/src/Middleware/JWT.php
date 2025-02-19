@@ -2,21 +2,24 @@
 
 namespace App\Middleware;
 
+use App\Entity\User;
 use Closure;
 use Framework\DependencyInjection\DependencyManagerInterface;
 use Framework\Handling\MiddlewareInterface;
 use Framework\HTTP\Request;
+use Framework\ORM\EntityManagerInterface;
 use ReallySimpleJWT\Decode;
 use ReallySimpleJWT\Parse;
 use ReallySimpleJWT\Token;
 
 class JWT implements MiddlewareInterface
 {
-    public array $data;
+    public ?string $token = null;
+    public ?array $payload = null;
+    public ?User $user = null;
 
-    public function __construct(Request $req)
+    public function __construct(Request $req, EntityManagerInterface $em)
     {
-        $this->data = [];
 
         if(!isset($req->getHeaders()["Authorization"]) || !str_starts_with($req->getHeaders()["Authorization"], "Bearer ")){
             return;
@@ -28,11 +31,13 @@ class JWT implements MiddlewareInterface
             return;
         }
 
-        $this->data["token"] = $token;
+        $this->token = $token;
 
         $jwt = new \ReallySimpleJWT\Jwt($token);
         $parse = new Parse($jwt, new Decode());
-        $this->data["payload"] = $parse->parse()->getPayload();
+        $this->payload = $parse->parse()->getPayload();
+
+        $this->user = $em->getRepository(User::class)->find($this->payload["id"]);
     }
 
     public function validateToken(string $token): bool

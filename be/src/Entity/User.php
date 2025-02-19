@@ -13,6 +13,10 @@ use Framework\ORM\JsonSerializable;
 #[Entity(repository: UserRepository::class, table: "user")]
 class User extends BaseEntity implements JsonSerializable
 {
+
+    public const ROLE_USER = "ROLE_USER";
+    public const ROLE_ADMIN = "ROLE_ADMIN";
+
     #[Id]
     #[Column(type : ColumnType::INT, column: "id")]
     public ?int $id = null;
@@ -20,8 +24,13 @@ class User extends BaseEntity implements JsonSerializable
     #[Column(type : ColumnType::VARCHAR, column: "username", length: 255)]
     public ?string $username = null;
 
-    #[Column(type : ColumnType::BOOL, column: "sex")]
-    public ?bool $sex = null;
+    #[Column(type: ColumnType::VARCHAR, column: 'role', length: 255)]
+    public ?string $role = null;
+
+    #[Column(type: ColumnType::VARCHAR, column: 'password', length: 255)]
+    public ?string $password = null;
+
+
 
     public function getId(): ?int
     {
@@ -40,17 +49,28 @@ class User extends BaseEntity implements JsonSerializable
         return $this;
     }
 
-    public function getSex(): ?bool
+
+    public function getRole(): ?string
     {
-        return $this->sex;
+        return $this->role;
     }
 
-    public function setSex(?bool $sex): self
+    public function setRole(?string $role): self
     {
-        $this->sex = $sex;
+        $this->role = $role;
         return $this;
     }
 
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+        return $this;
+    }
 
     /**
      * @return array
@@ -60,7 +80,7 @@ class User extends BaseEntity implements JsonSerializable
         return [
             "id" => $this->getId(),
             "username" => $this->getUsername(),
-            "sex" => $this->getSex()
+            "role" => $this->getRole(),
         ];
     }
 }
