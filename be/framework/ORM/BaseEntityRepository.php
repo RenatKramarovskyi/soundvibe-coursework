@@ -52,7 +52,7 @@ class BaseEntityRepository
     public function find(string $id): mixed
     {
         $idColumn = (new $this->entityClass())->getIdColumn();
-        return current($this->findBy([$idColumn => $id], 1));
+        return current($this->findBy([$idColumn => $id], 1)) ?: null;
     }
 
     /**
@@ -127,7 +127,7 @@ class BaseEntityRepository
      */
     public function findOneBy(array $criteria, ?int $offset = null, ?array $orderBy = null): mixed
     {
-        return current($this->findBy($criteria, 1, $offset, $orderBy));
+        return current($this->findBy($criteria, 1, $offset, $orderBy)) ?: null;
     }
 
 }

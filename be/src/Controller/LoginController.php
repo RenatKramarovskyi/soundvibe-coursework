@@ -2,27 +2,41 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Middleware\JWT;
 use Framework\HTTP\JsonResponse;
 use Framework\HTTP\Request;
 use Framework\HTTP\Response;
+use Framework\ORM\EntityManagerInterface;
 use Framework\Routing\Attributes\Route;
 use Framework\Routing\Controllers\BaseController;
 
 class LoginController extends BaseController
 {
     #[Route(name: "login", path: "/login", methods: [Request::METHOD_POST])]
-    public function login(Request $req, JWT $jwt) : Response
+    public function login(Request $req, JWT $jwt, EntityManagerInterface $em) : Response
     {
         $body = $req->getContent();
         if (!isset($body["username"], $body["password"])) {
             return new JsonResponse(["message" => "Missing credentials"], 400);
         }
 
+        $user = $em->getRepository(User::class)->findOneBy(["username"=> $body["username"]]);
+
+        if (!isset($user)) {
+            return new JsonResponse(["Error" => "Error message: User with such username was not found"], 401);
+        }
+
+        $hashedPassword = hash_hmac("sha256", $body["password"], $_ENV["PASSWORD_SECRET_KEY"]);
+
+        /** @var User $user */
+        if ($user->getPassword() !== $hashedPassword) {
+            return new JsonResponse(["Error" => "Error message: Incorrect password"], 401);
+        }
+
         $payload = [
-            "id" => uniqid(),
-            "username" => $body["password"],
-            "role" => "ROLE_USER"
+            "id" => $user->getId(),
+            "role" => $user->getRole()
         ];
 
         $token = $jwt->generateToken($payload);

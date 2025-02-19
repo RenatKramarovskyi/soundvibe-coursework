@@ -39,9 +39,22 @@ class UserController extends BaseController
     {
         $body = $request->getContent();
 
+        if (!isset($body["username"], $body["password"])) {
+            return new JsonResponse(["message" => "Missing fields in body"], 400);
+        }
+
+        $userCandidate = $this->em->getRepository(User::class)->findOneBy(["username" => $body["username"]]);
+        if ($userCandidate){
+            return new JsonResponse(["error" => "Error message: user with such username is already exists"], 409);
+        }
+
         $user = new User();
+
         $user->setUsername($body["username"])
-            ->setSex($body["sex"]);
+            ->setRole(User::ROLE_USER);
+
+        $hashedPassword = hash_hmac("sha256", $body["password"], $_ENV["PASSWORD_SECRET_KEY"]);
+        $user->setPassword($hashedPassword);
 
         $this->em->persist($user);
         $this->em->flush();
