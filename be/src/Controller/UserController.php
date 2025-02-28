@@ -10,6 +10,7 @@ use Framework\ORM\EntityManagerInterface;
 use Framework\ORM\Query;
 use Framework\Routing\Attributes\Route;
 use Framework\Routing\Controllers\BaseController;
+use Framework\Validation\Validator;
 
 class UserController extends BaseController
 {
@@ -43,9 +44,25 @@ class UserController extends BaseController
             return new JsonResponse(["message" => "Missing fields in body"], 400);
         }
 
+        $v = new Validator();
+        if (!$v->for($body["username"])
+            ->not()->empty()
+            ->type("string")
+            ->check()
+        ){
+            return new JsonResponse(["message" => "Invalid username"], 400);
+        }
+
+        if (!$v->for($body["password"])
+            ->password()
+            ->check()
+        ){
+            return new JsonResponse(["message" => "Invalid password"], 400);
+        }
+
         $userCandidate = $this->em->getRepository(User::class)->findOneBy(["username" => $body["username"]]);
         if ($userCandidate){
-            return new JsonResponse(["error" => "Error message: user with such username is already exists"], 409);
+            return new JsonResponse(["message" => "Error message: user with such username is already exists"], 409);
         }
 
         $user = new User();
