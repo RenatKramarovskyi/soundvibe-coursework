@@ -15,8 +15,6 @@ class PicsController extends BaseController
     #[Route(name: "pics-index", path: "/pics", methods: [Request::METHOD_POST])]
     public function index(Request $req): Response
     {
-        var_dump($req->getHeaders());
-
         if(!isset($req->getFiles()["pic"])) {
             return new JsonResponse(["message" => "pic is not provided", 400]);
 

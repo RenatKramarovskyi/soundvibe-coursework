@@ -19,21 +19,47 @@ class PostController extends BaseController
     {
     }
 
-    #[Route(name: "post-get-all", path: "/post", methods: [Request::METHOD_GET])]
-    public function getAll(): Response
+    private function checkJwt(Request $req, JWT $jwt)
     {
+        if ($jwt->user === null) {
+            return new JsonResponse(["message" => "Unauthorized"], 401);
+        }
+
+        if ($jwt->user->getRole() !== 'ROLE_USER') {
+            return new JsonResponse(["message" => "Forbidden: Insufficient role"], 403);
+        }
+    }
+
+    #[Route(name: "post-get-all", path: "/post", methods: [Request::METHOD_GET])]
+    public function getAll(Request $req, JWT $jwt): Response
+    {
+        $checkResponse = $this->checkJwt($req, $jwt);
+        if ($checkResponse) {
+            return $checkResponse;
+        }
+
         return new JsonResponse($this->em->getRepository(Post::class)->findAll());
     }
 
     #[Route(name: "post-get-by-id", path: "/post/{id}", methods: [Request::METHOD_GET])]
-    public function getById(string $id): Response
+    public function getById(Request $req, string $id, JWT $jwt): Response
     {
+        $checkResponse = $this->checkJwt($req, $jwt);
+        if ($checkResponse) {
+            return $checkResponse;
+        }
+
         return new JsonResponse($this->em->getRepository(Post::class)->find($id));
     }
 
     #[Route(name: "post-create", path: "/post", methods: [Request::METHOD_POST])]
-    public function create(Request $request): Response
+    public function create(Request $request, JWT $jwt): Response
     {
+        $checkResponse = $this->checkJwt($request, $jwt);
+        if ($checkResponse) {
+            return $checkResponse;
+        }
+
         $body = $request->getContent();
 
         if (!isset($body["title"], $body["content"], $body["category"])) {
@@ -86,8 +112,9 @@ class PostController extends BaseController
     #[Route(name: "posts-get-by-category", path: "/posts-by-category/{category}", methods: [Request::METHOD_GET])]
     public function getAllPostsByCategory(Request $req, string $category, JWT $jwt): Response
     {
-        if ($jwt->user === null) {
-            return new JsonResponse(["message" => "Unauthorized"], 401);
+        $checkResponse = $this->checkJwt($req, $jwt);
+        if ($checkResponse) {
+            return $checkResponse;
         }
 
         $posts = $this->em->getRepository(Post::class)->findBy([
