@@ -14,14 +14,9 @@ use Framework\Validation\Validator;
 
 class UserController extends BaseController
 {
-
-    /**
-     * @param EntityManagerInterface $em
-     */
     public function __construct(private EntityManagerInterface $em)
     {
     }
-
 
     #[Route(name: "user-get-all", path: "/user", methods: [Request::METHOD_GET])]
     public function getAll(): Response
@@ -40,34 +35,52 @@ class UserController extends BaseController
     {
         $body = $request->getContent();
 
-        if (!isset($body["username"], $body["password"])) {
+        if (!isset($body["username"], $body["password"], $body["email"], $body["sex"])) {
             return new JsonResponse(["message" => "Missing fields in body"], 400);
         }
 
         $v = new Validator();
+
         if (!$v->for($body["username"])
             ->not()->empty()
             ->type("string")
             ->check()
-        ){
+        ) {
             return new JsonResponse(["message" => "Invalid username"], 400);
         }
 
         if (!$v->for($body["password"])
             ->password()
             ->check()
-        ){
+        ) {
             return new JsonResponse(["message" => "Invalid password"], 400);
         }
 
+        if (!$v->for($body["email"])
+            ->email()
+            ->check()
+        ) {
+            return new JsonResponse(["message" => "Invalid email"], 400);
+        }
+
+        if (!is_bool($body["sex"])) {
+            return new JsonResponse(["message" => "Invalid sex, must be true or false"], 400);
+        }
+
         $userCandidate = $this->em->getRepository(User::class)->findOneBy(["username" => $body["username"]]);
-        if ($userCandidate){
-            return new JsonResponse(["message" => "Error message: user with such username is already exists"], 409);
+        if ($userCandidate) {
+            return new JsonResponse(["message" => "User with this username already exists"], 409);
+        }
+
+        $userCandidate = $this->em->getRepository(User::class)->findOneBy(["email" => $body["email"]]);
+        if ($userCandidate) {
+            return new JsonResponse(["message" => "User with this email already exists"], 409);
         }
 
         $user = new User();
-
         $user->setUsername($body["username"])
+            ->setEmail($body["email"])
+            ->setSex($body["sex"])
             ->setRole(User::ROLE_USER);
 
         $hashedPassword = hash_hmac("sha256", $body["password"], $_ENV["PASSWORD_SECRET_KEY"]);
@@ -84,5 +97,4 @@ class UserController extends BaseController
             Query::ORDER_DESC
         ]));
     }
-
 }
