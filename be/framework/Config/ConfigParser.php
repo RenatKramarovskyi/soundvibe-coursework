@@ -9,7 +9,8 @@ class ConfigParser
     public const USER_CONFIG_PATH = "config/";
     public const CONFIG_FILES = [
         "services.yaml",
-        "routing.yaml"
+        "routing.yaml",
+        "files.yaml"
     ];
     /**
      * @param string $directory

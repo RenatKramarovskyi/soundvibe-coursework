@@ -21,11 +21,14 @@ class RequestParser implements MiddlewareInterface
 
         $request = $dm->getDependency(Request::class);
         $headers = getallheaders();
+
         $content = null;
-
-
+        $files = [];
         if ($headers["Content-Type"] == "application/json") {
             $content = json_decode(file_get_contents("php://input"), true);
+        } else if (str_starts_with($headers["Content-Type"], "multipart/form-data")) {
+            $content = $_POST;
+            $files = $_FILES;
         }
 
         $globalPrefix = @Config::$config["routing"]["global_prefix"] ?? "";
@@ -44,6 +47,7 @@ class RequestParser implements MiddlewareInterface
             ->setHeaders($headers)
             ->setQuery($_GET)
             ->setContent($content)
+            ->setFiles($files)
             ->setPath($path)
             ->setUrl("$protocol://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
     }
