@@ -13,30 +13,32 @@ use Framework\ORM\JsonSerializable;
 #[Entity(repository: UserRepository::class, table: "user")]
 class User extends BaseEntity implements JsonSerializable
 {
-
     public const ROLE_USER = "ROLE_USER";
     public const ROLE_ADMIN = "ROLE_ADMIN";
 
     #[Id]
-    #[Column(type : ColumnType::INT, column: "id")]
+    #[Column(type: ColumnType::INT, column: "id")]
     public ?int $id = null;
 
-    #[Column(type : ColumnType::VARCHAR, column: "username", length: 255)]
+    #[Column(type: ColumnType::VARCHAR, column: "username", length: 255)]
     public ?string $username = null;
 
-    #[Column(type: ColumnType::VARCHAR, column: 'role', length: 255)]
-    public ?string $role = null;
+    #[Column(type: ColumnType::VARCHAR, column: "email", length: 255)]
+    public ?string $email = null;
 
-    #[Column(type: ColumnType::VARCHAR, column: 'password', length: 255)]
+    #[Column(type: ColumnType::VARCHAR, column: "password", length: 255)]
     public ?string $password = null;
 
+    #[Column(type: ColumnType::BOOL, column: "sex")]
+    public ?bool $sex = null;
 
+    #[Column(type: ColumnType::VARCHAR, column: "role", length: 255)]
+    public ?string $role = self::ROLE_USER;
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
 
     public function getUsername(): ?string
     {
@@ -49,15 +51,14 @@ class User extends BaseEntity implements JsonSerializable
         return $this;
     }
 
-
-    public function getRole(): ?string
+    public function getEmail(): ?string
     {
-        return $this->role;
+        return $this->email;
     }
 
-    public function setRole(?string $role): self
+    public function setEmail(?string $email): self
     {
-        $this->role = $role;
+        $this->email = $email;
         return $this;
     }
 
@@ -72,14 +73,35 @@ class User extends BaseEntity implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
+    public function getSex(): ?bool
+    {
+        return $this->sex;
+    }
+
+    public function setSex(?bool $sex): self
+    {
+        $this->sex = $sex;
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+        return $this;
+    }
+
     public function jsonSerialize(): array
     {
         return [
             "id" => $this->getId(),
             "username" => $this->getUsername(),
+            "email" => $this->getEmail(),
+            "sex" => $this->getSex(),
             "role" => $this->getRole(),
         ];
     }
