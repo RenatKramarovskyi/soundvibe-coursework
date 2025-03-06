@@ -34,7 +34,6 @@ class UserController extends BaseController
     public function create(Request $request): Response
     {
         $body = $request->getContent();
-
         if (!isset($body["username"], $body["password"], $body["email"], $body["sex"])) {
             return new JsonResponse(["message" => "Missing fields in body"], 400);
         }
@@ -49,14 +48,15 @@ class UserController extends BaseController
             return new JsonResponse(["message" => "Invalid username"], 400);
         }
 
-        if (!$v->for($body["password"])
+        if (!$v
+            ->for($body["password"])
             ->password()
             ->check()
         ) {
             return new JsonResponse(["message" => "Invalid password"], 400);
         }
 
-        if (!$v->for($body["email"])
+        if ($v->for($body["email"])
             ->email()
             ->check()
         ) {
