@@ -6,6 +6,7 @@ use Exception;
 
 class QueryBuilder
 {
+
     /**
      * @var Query
      */
@@ -26,9 +27,10 @@ class QueryBuilder
     }
 
     /**
-     * @return $this
+     * Resets Builder to default state
+     * @return $this Query Builder
      */
-    public function reset() : self
+    public function reset(): self
     {
         $this->query = new Query();
         $this->paramsCount = 1;
@@ -36,7 +38,7 @@ class QueryBuilder
     }
 
     /**
-     * @return Query
+     * @return Query Resulting query object
      */
     public function getQuery(): Query
     {
@@ -44,13 +46,13 @@ class QueryBuilder
     }
 
     /**
-     * @param string $from
-     * @param string|null $alias
-     * @param array $columns
-     * @return $this
-     * @throws \Exception
+     * @param string $from Table name to select data from
+     * @param string|null $alias Alias for table (optional)
+     * @param array $columns Columns to select ("*" by default)
+     * @return $this Query Builder
+     * @throws Exception
      */
-    public function select(string $from, ?string $alias = null, array $columns = ["*"]) : self
+    public function select(string $from, ?string $alias = null, array $columns = ["*"]): self
     {
         $this->query->setType(Query::TYPE_SELECT)
             ->setTable($from)
@@ -63,14 +65,13 @@ class QueryBuilder
         return $this;
     }
 
-
     /**
-     * @param string $from
-     * @param string|null $alias
-     * @return $this
-     * @throws \Exception
+     * @param string $from Table name to delete data from
+     * @param string|null $alias Alias for table (optional)
+     * @return $this Query Builder
+     * @throws Exception
      */
-    public function delete(string $from, ?string $alias = null) : self
+    public function delete(string $from, ?string $alias = null): self
     {
         $this->query->setType(Query::TYPE_DELETE)
             ->setTable($from);
@@ -83,23 +84,12 @@ class QueryBuilder
     }
 
     /**
-     * @param string $table
-     * @param string|null $alias
-     * @return $this
+     * @param string $into Table name to insert data into
+     * @param array $columns Columns to insert (empty by default, order is important)
+     * @return $this Query Builder
+     * @throws Exception
      */
-    public function from(string $table, ?string $alias = null) : self
-    {
-
-        return $this;
-    }
-
-    /**
-     * @param string $into
-     * @param array $columns
-     * @return $this
-     * @throws \Exception
-     */
-    public function insert(string $into, array $columns = []) : self
+    public function insert(string $into, array $columns = []): self
     {
         $this->query->setType(Query::TYPE_INSERT)
             ->setTable($into)
@@ -109,12 +99,12 @@ class QueryBuilder
     }
 
     /**
-     * @param string $table
-     * @param array $columns
-     * @return $this
+     * @param string $table Table to update data in
+     * @param array $columns Columns to update (order is important)
+     * @return $this Query Builder
      * @throws Exception
      */
-    public function update(string $table, array $columns) : self
+    public function update(string $table, array $columns): self
     {
         $this->query->setType(Query::TYPE_UPDATE)
             ->setTable($table)
@@ -124,40 +114,43 @@ class QueryBuilder
     }
 
     /**
-     * @param string $condition
-     * @return $this
+     * Condition is a logical SQL expression. Use params instead of direct values! F.e., "id = :id"
+     * @param string $condition New condition
+     * @return $this Query Builder
      */
-    public function where(string $condition) : self
+    public function where(string $condition): self
     {
         $this->query->andCondition($condition);
         return $this;
     }
 
     /**
-     * @param string $condition
-     * @return $this
+     * Condition is a logical SQL expression. Use params instead of direct values! F.e., "id = :id"
+     * @param string $condition New condition
+     * @return $this Query Builder
      */
-    public function andWhere(string $condition) : self
+    public function andWhere(string $condition): self
     {
         $this->query->andCondition($condition);
         return $this;
     }
 
     /**
-     * @param string $condition
-     * @return $this
+     * Condition is a logical SQL expression. Use params instead of direct values! F.e., "id = :id"
+     * @param string $condition New condition
+     * @return $this Query Builder
      */
-    public function orWhere(string $condition) : self
+    public function orWhere(string $condition): self
     {
         $this->query->orCondition($condition);
         return $this;
     }
 
     /**
-     * @param array ...$valueSets
-     * @return $this
+     * @param array ...$valueSets Value sets. Each value set is an array like [value1, value2, ..., valueX]
+     * @return $this Query Builder
      */
-    public function values(array ...$valueSets) : self
+    public function values(array ...$valueSets): self
     {
         foreach ($valueSets as $valueSet){
             $this->addValues($valueSet);
@@ -166,15 +159,16 @@ class QueryBuilder
     }
 
     /**
-     * @param array $valueSet
-     * @return $this
+     * Receives a value set, adds it to Query value sets and automatically generates params for each value
+     * @param array $valueSet Value set - an array like [value1, value2, ..., valueX]
+     * @return $this Query Builder
      */
-    public function addValues(array $valueSet) : self
+    public function addValues(array $valueSet): self
     {
         $preparedSet = [];
 
-        foreach ($valueSet as $value){
-            $param = "QB_VALUE_".$this->paramsCount;
+        foreach ($valueSet as $value) {
+            $param = "QB_VALUE_" . $this->paramsCount;
 
             $this->setParams([$param => $value]);
             $preparedSet[] = ":$param";
@@ -187,10 +181,10 @@ class QueryBuilder
     }
 
     /**
-     * @param string ...$groupBy
-     * @return $this
+     * @param string ...$groupBy Columns to group data by
+     * @return $this Query Builder
      */
-    public function groupBy(string ...$groupBy) : self
+    public function groupBy(string ...$groupBy): self
     {
         foreach ($groupBy as $column){
             $this->query->addGroupBy($column);
@@ -199,48 +193,48 @@ class QueryBuilder
     }
 
     /**
-     * @param array ...$orderBy
-     * @return $this
-     * @throws \Exception
+     * @param array ...$orderBy OrderBy's - arrays like [columnToOrderBy, orderingDirection]
+     * @return $this Query Builder
+     * @throws Exception
      */
-    public function orderBy(array ...$orderBy) : self
+    public function orderBy(array ...$orderBy): self
     {
-        foreach ($orderBy as [$column, $directions]) {
-            $this->query->addOrderBy($column, $directions);
+        foreach ($orderBy as [$column, $direction]){
+            $this->query->addOrderBy($column, $direction);
         }
         return $this;
     }
 
     /**
-     * @param int $limit
-     * @return $this
+     * @param int $limit Limit
+     * @return $this Query Builder
      */
-    public function limit(int $limit) : self
+    public function limit(int $limit): self
     {
         $this->query->setLimit($limit);
         return $this;
     }
 
     /**
-     * @param int $offset
-     * @return $this
+     * @param int $offset Offset
+     * @return $this Query Builder
      */
-    public function offset(int $offset) : self
+    public function offset(int $offset): self
     {
         $this->query->setOffset($offset);
         return $this;
     }
 
     /**
-     * @param array $values
-     * @return $this
+     * Binds values to params names
+     * @param array $values Associative array like [paramName=>paramValue]
+     * @return $this Query Builder
      */
-    public function setParams(array $values) : self
+    public function setParams(array $values): self
     {
-        foreach ($values as $key => $value){
+        foreach ($values as $key => $value) {
             $this->query->addParam($key, $value);
         }
         return $this;
     }
-
 }

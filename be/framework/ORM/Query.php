@@ -15,11 +15,11 @@ class Query
         self::TYPE_SELECT,
         self::TYPE_INSERT,
         self::TYPE_UPDATE,
-        self::TYPE_DELETE,
+        self::TYPE_DELETE
     ];
     public const ORDER_ASC = "ASC";
     public const ORDER_DESC = "DESC";
-    public const  ORDER_DIRECTIONS = [
+    public const ORDER_DIRECTIONS = [
         self::ORDER_ASC,
         self::ORDER_DESC
     ];
@@ -81,7 +81,7 @@ class Query
 
 
     /**
-     * @return string
+     * @return string Query type
      */
     public function getType(): string
     {
@@ -89,8 +89,8 @@ class Query
     }
 
     /**
-     * @param string $type
-     * @return $this
+     * @param string $type Query type
+     * @return $this Query object
      * @throws Exception
      */
     public function setType(string $type): self
@@ -106,7 +106,7 @@ class Query
 
 
     /**
-     * @return string|null
+     * @return string|null Table name (if provided)
      */
     public function getTable(): ?string
     {
@@ -114,8 +114,8 @@ class Query
     }
 
     /**
-     * @param string|null $table
-     * @return $this
+     * @param string|null $table Table name
+     * @return $this Query object
      */
     public function setTable(?string $table): self
     {
@@ -124,7 +124,7 @@ class Query
     }
 
     /**
-     * @return array
+     * @return array Associative array of aliases which contains [fullName => alias] key-value pairs
      */
     public function getAliases(): array
     {
@@ -132,8 +132,8 @@ class Query
     }
 
     /**
-     * @param array $aliases
-     * @return $this
+     * @param array $aliases Associative array of aliases which contains [fullName => alias] key-value pairs
+     * @return $this Query object
      */
     public function setAliases(array $aliases): self
     {
@@ -142,18 +142,18 @@ class Query
     }
 
     /**
-     * @param string $table
-     * @param string $alias
-     * @return $this
+     * @param string $table Full table name
+     * @param string $alias Alias
+     * @return $this Query object
      */
-    public function addAlias(string $table, string $alias) : self
+    public function addAlias(string $table, string $alias): self
     {
         $this->aliases[$table] = $alias;
         return $this;
     }
 
     /**
-     * @return array
+     * @return array Array of all columns used in the query
      */
     public function getColumns(): array
     {
@@ -161,8 +161,8 @@ class Query
     }
 
     /**
-     * @param array $columns
-     * @return $this
+     * @param array $columns Array of all columns
+     * @return $this Query object
      */
     public function setColumns(array $columns): self
     {
@@ -171,7 +171,7 @@ class Query
     }
 
     /**
-     * @return array
+     * @return array Array of conditions. The elements are treated as a condition groups and will be joined by OR operator
      */
     public function getConditions(): array
     {
@@ -179,8 +179,8 @@ class Query
     }
 
     /**
-     * @param array $conditions
-     * @return $this
+     * @param array $conditions Array of conditions
+     * @return $this Query object
      */
     public function setConditions(array $conditions): self
     {
@@ -189,10 +189,11 @@ class Query
     }
 
     /**
-     * @param string $condition
-     * @return $this
+     * Automatically adds new condition to the last one (if exists) by joining them with AND operator
+     * @param string $condition New condition
+     * @return $this Query object
      */
-    public function andCondition(string $condition) : self
+    public function andCondition(string $condition): self
     {
         if(empty($this->conditions)){
             $this->conditions[] = "";
@@ -209,17 +210,18 @@ class Query
     }
 
     /**
-     * @param string $condition
-     * @return $this
+     * Adds new condition to conditions array
+     * @param string $condition New condition
+     * @return $this Query object
      */
-    public function orCondition(string $condition) : self
+    public function orCondition(string $condition): self
     {
         $this->conditions[] = $condition;
         return $this;
     }
 
     /**
-     * @return array
+     * @return array Array of value sets. Each value set is an array like [value1, value2, ..., valueX]
      */
     public function getValueSets(): array
     {
@@ -228,8 +230,8 @@ class Query
 
 
     /**
-     * @param array $valueSets
-     * @return $this
+     * @param array $valueSets Array of value sets. Each value set is an array like [value1, value2, ..., valueX]
+     * @return $this Query object
      */
     public function setValueSets(array $valueSets): self
     {
@@ -238,8 +240,8 @@ class Query
     }
 
     /**
-     * @param array $valueSet
-     * @return $this
+     * @param array $valueSet Value set: an array like [value1, value2, ..., valueX]
+     * @return $this Query object
      */
     public function addValueSet(array $valueSet): self
     {
@@ -249,7 +251,7 @@ class Query
 
 
     /**
-     * @return array
+     * @return array Array of column names for groupBy
      */
     public function getGroupBy(): array
     {
@@ -257,8 +259,8 @@ class Query
     }
 
     /**
-     * @param array $groupBy
-     * @return $this
+     * @param array $groupBy Array of column names for groupBy
+     * @return $this Query object
      */
     public function setGroupBy(array $groupBy): self
     {
@@ -267,8 +269,8 @@ class Query
     }
 
     /**
-     * @param string $groupBy
-     * @return $this
+     * @param string $groupBy New column to group results by
+     * @return $this Query object
      */
     public function addGroupBy(string $groupBy): self
     {
@@ -277,7 +279,7 @@ class Query
     }
 
     /**
-     * @return array
+     * @return array Array of orderBy's - arrays like [columnName, direction]
      */
     public function getOrderBy(): array
     {
@@ -285,8 +287,8 @@ class Query
     }
 
     /**
-     * @param array $orderBy
-     * @return $this
+     * @param array $orderBy Array of orderBy's - arrays like [columnName, direction]
+     * @return $this Query object
      */
     public function setOrderBy(array $orderBy): self
     {
@@ -295,9 +297,9 @@ class Query
     }
 
     /**
-     * @param string $column
-     * @param string $direction
-     * @return $this
+     * @param string $column Column to order results by
+     * @param string $direction Direction of ordering
+     * @return $this Query object
      * @throws Exception
      */
     public function addOrderBy(string $column, string $direction): self
@@ -312,7 +314,7 @@ class Query
     }
 
     /**
-     * @return int|null
+     * @return int|null limit (if provided)
      */
     public function getLimit(): ?int
     {
@@ -320,8 +322,8 @@ class Query
     }
 
     /**
-     * @param int|null $limit
-     * @return $this
+     * @param int|null $limit limit
+     * @return $this Query object
      */
     public function setLimit(?int $limit): self
     {
@@ -330,7 +332,7 @@ class Query
     }
 
     /**
-     * @return int|null
+     * @return int|null offset (if provided)
      */
     public function getOffset(): ?int
     {
@@ -338,8 +340,8 @@ class Query
     }
 
     /**
-     * @param int|null $offset
-     * @return $this
+     * @param int|null $offset offset
+     * @return $this Query object
      */
     public function setOffset(?int $offset): self
     {
@@ -348,7 +350,7 @@ class Query
     }
 
     /**
-     * @return array
+     * @return array Associative array of params like [paramName => paramValue]
      */
     public function getParams(): array
     {
@@ -356,8 +358,8 @@ class Query
     }
 
     /**
-     * @param array $params
-     * @return $this
+     * @param array $params Associative array of params like [paramName => paramValue]
+     * @return $this Query object
      */
     public function setParams(array $params): self
     {
@@ -366,11 +368,11 @@ class Query
     }
 
     /**
-     * @param string $name
-     * @param mixed $value
-     * @return $this
+     * @param string $name Param name
+     * @param mixed $value Param value
+     * @return $this Query object
      */
-    public function addParam(string $name, mixed $value) : self
+    public function addParam(string $name, mixed $value): self
     {
         $this->params[$name] = $value;
         return $this;
