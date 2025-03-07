@@ -17,11 +17,11 @@ class LoginController extends BaseController
     public function login(Request $req, JWT $jwt, EntityManagerInterface $em) : Response
     {
         $body = $req->getContent();
-        if (!isset($body["username"], $body["password"])) {
+        if (!isset($body["email"], $body["password"])) {
             return new JsonResponse(["message" => "Missing credentials"], 400);
         }
 
-        $user = $em->getRepository(User::class)->findOneBy(["username"=> $body["username"]]);
+        $user = $em->getRepository(User::class)->findOneBy(["email"=> $body["email"]]);
 
         if (!isset($user)) {
             return new JsonResponse(["Error" => "Error message: User with such username was not found"], 401);

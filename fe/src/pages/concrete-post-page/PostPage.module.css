@@ -1,0 +1,126 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+
+    .postContainer {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        color: #181818;
+        width: 90vw;
+        border-radius: 8px;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #c2c3ee;
+
+        .commentInputArea{
+
+        }
+
+        .postArea {
+            flex: 2;
+            height: 60vh;
+            float: left;
+            > div{
+                height: 100%;
+                border-radius: 12px;
+                background-color: #9c9c9c;
+                padding: 15px;
+                box-sizing: border-box;
+                float: left;
+
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                .postPhoto {
+                    flex: 1;
+                    aspect-ratio: 2/1;
+                    background-color: #c2c3ee;
+                    box-shadow: 5px 5px 10px 0px black;
+                    border-radius: 12px;
+
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    font-size: 3rem;
+                    font-family: monospace;
+                }
+                .postContent {
+                    text-align: left;
+                    .title{
+                        font-weight: 800;
+                        font-size: 1.5rem;
+                    }
+                    .content{
+                        font-size: 1rem;
+                    }
+                    .category{
+                        font-size: 0.7rem;
+                        font-weight: 800;
+                    }
+                }
+            }
+        }
+        .commentsListArea{
+            flex: 1;
+            max-height: 60vh;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+    }
+
+    .inputContainer{
+        width: 90vw;
+        border-radius: 8px;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #c2c3ee;
+        height: 10vh;
+        gap: 20px;
+        display: flex;
+
+        > input{
+            flex: 1;
+            outline: none;
+            border: none;
+
+            box-sizing: border-box;
+            border-radius: 12px;
+            background-color: #9c9c9c;
+            font-size: 1.2rem;
+            padding: 5px;
+            color: black;
+            font-weight: 800;
+        }
+
+        > input:focus{
+            background-color: #767575;
+            color: white;
+        }
+
+        > button{
+            aspect-ratio: 1/2;
+            background-color: #9c9c9c;
+            padding: 5px;
+            cursor: pointer;
+            color: black;
+            outline: none;
+            border: none;
+
+            border-radius: 12px;
+            transition: .3s;
+        }
+        > button:hover{
+            color: white;
+            background-color: #767575;
+
+        }
+    }
+}

@@ -10,6 +10,6 @@ RUN npm cache clean -f
 RUN npm cache verify
 RUN npm install -g react-scripts
 
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["docker-entrypoint.sh"]
+COPY docker_entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker_entrypoint.sh
+ENTRYPOINT ["docker_entrypoint.sh"]

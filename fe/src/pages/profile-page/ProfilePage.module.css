@@ -1,0 +1,70 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+
+    .profileBlockArea {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        color: #181818;
+        width: 90vw;
+        border-radius: 8px;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #c2c3ee;
+
+        .userInfoArea {
+            flex: 2;
+            height: 60vh;
+            float: left;
+
+            > div{
+                width: 100%;
+                height: 100%;
+                border-radius: 12px;
+                background-color: #9c9c9c;
+                padding: 15px;
+                box-sizing: border-box;
+                float: left;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+
+                .userInfoField{
+                    font-size: 1rem;
+                    font-weight: 800;
+                    font-family: monospace;
+
+                    white-space: normal;
+                    word-break: break-word;
+
+                    box-sizing: border-box;
+                    padding: 8px;
+
+                    background-color: #c2c3ee;
+                    border-radius: 12px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .userInfoField:nth-last-of-type(1){
+                    flex: auto;
+                }
+
+            }
+        }
+        .commentsListArea{
+            flex: 3;
+            max-height: 60vh;
+            overflow: scroll;
+            scrollbar-width: none;
+        }
+    }
+}

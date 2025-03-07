@@ -39,7 +39,7 @@ services:
       context: fe
       dockerfile: ../docker/fe/Dockerfile
     restart: unless-stopped
-    command: npm start
+    command: npm run dev
     stdin_open: true
     tty: true
     volumes:
