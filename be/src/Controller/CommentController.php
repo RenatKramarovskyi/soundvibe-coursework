@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Entity\Comment;
+use App\Entity\User;
 use App\Middleware\JWT;
 use Framework\HTTP\JsonResponse;
 use Framework\HTTP\Request;
@@ -116,14 +117,27 @@ class CommentController extends BaseController
             return $checkResponse;
         }
 
-        $comments = $this->em->getRepository(Comment::class)->findBy([
-            'postId' => $postId
-        ]);
+        $comments = $this->em->getRepository(Comment::class)->findBy(['postId' => $postId]);
 
         if (empty($comments)) {
             return new JsonResponse(["message" => "No comments found for this post"], 404);
         }
 
-        return new JsonResponse($comments);
+
+        $commentsData = array_map(function ($comment) {
+            $author = $this->em->getRepository(User::class)->find($comment->getAuthorId());
+            return [
+                'id' => $comment->getId(),
+                'content' => $comment->getContent(),
+                'createdAt' => $comment->getCreatedAt()->format("Y-m-d H:i:s"),
+                'author' => [
+                    'id' => $author->getId(),
+                    'username' => $author->getUsername(),
+                ],
+            ];
+        }, $comments);
+
+        return new JsonResponse($commentsData);
     }
+
 }
