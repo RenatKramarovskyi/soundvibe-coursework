@@ -18,7 +18,7 @@ const ProfilePage = () => {
 
 
     const [fetchComments, isLoading, error] = useFetching(async () => {
-        const commentResponse = await axios.get<Comment[]>(`/api/comment/by-user-id/${jwtDecode(localStorage.getItem('token')).id}`, {
+        const commentResponse = await axios.get<Comment[]>(`/api/comments-by-author/${jwtDecode(localStorage.getItem('token')).id}`, {
             headers: getToken()
         });
         setUserComments(commentResponse.data)

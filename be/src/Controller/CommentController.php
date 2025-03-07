@@ -140,4 +140,36 @@ class CommentController extends BaseController
         return new JsonResponse($commentsData);
     }
 
+
+    #[Route(name: "comments-get-by-author-id", path: "/comments-by-author/{authorId}", methods: [Request::METHOD_GET])]
+        public function getCommentsByAuthor(Request $req, int $authorId, JWT $jwt): Response
+        {
+            $checkResponse = $this->checkJwt($req, $jwt);
+            if ($checkResponse) {
+                return $checkResponse;
+            }
+
+            $comments = $this->em->getRepository(Comment::class)->findBy(['authorId' => $authorId]);
+
+            if (empty($comments)) {
+                return new JsonResponse(["message" => "No comments found for this post"], 404);
+            }
+
+
+            $commentsData = array_map(function ($comment) {
+                $author = $this->em->getRepository(User::class)->find($comment->getAuthorId());
+                return [
+                    'id' => $comment->getId(),
+                    'content' => $comment->getContent(),
+                    'createdAt' => $comment->getCreatedAt()->format("Y-m-d H:i:s"),
+                    'author' => [
+                        'id' => $author->getId(),
+                        'username' => $author->getUsername(),
+                    ],
+                ];
+            }, $comments);
+
+            return new JsonResponse($commentsData);
+        }
+
 }
