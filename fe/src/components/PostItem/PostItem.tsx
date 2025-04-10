@@ -13,7 +13,7 @@ const PostItem: FC<PostItemProps> = ({postData}) => {
     return (
         <div className={cls.postBox}>
             <div className={cls.imageArea}>
-                <img src="https://random.imagecdn.app/400/400" alt="random-pic"/>
+                <img src="https://picsum.photos/400/400" alt="random-pic"/>
             </div>
             <div className={cls.contentArea}>
                 <div>

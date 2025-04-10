@@ -16,6 +16,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        /*background-color: #7979ad;*/
+        /*border-radius: 12px;*/
+
 
         > img {
             aspect-ratio: 1/1;

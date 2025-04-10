@@ -34,7 +34,7 @@ class UserController extends BaseController
     public function create(Request $request): Response
     {
         $body = $request->getContent();
-        if (!isset($body["username"], $body["password"], $body["email"], $body["sex"])) {
+        if (!isset($body["username"], $body["email"], $body["password"], $body["sex"])) {
             return new JsonResponse(["message" => "Missing fields in body"], 400);
         }
 

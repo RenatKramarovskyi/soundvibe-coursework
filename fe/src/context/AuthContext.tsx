@@ -57,18 +57,31 @@ export const AuthProvider = ({children}) => {
         }
 
     }
-    const register = async (credentials : RegistrationProps) => {
-        try{
-            const createUserResponse = await axios.post('api/user', credentials);
-            const loginResponse = await axios.post('api/login', {email: credentials.email, password: credentials.password});
-            console.log(loginResponse)
-            localStorage.setItem('token', loginResponse.data.token)
-            setIsAuthenticated(true)
-            navigate('home')
-        }catch (e){
-            console.log('login failed ' + e.message)
+    const register = async (credentials: RegistrationProps): Promise<string | null> => {
+        try {
+            console.log("credentials: ", credentials);
+            await axios.post('api/user', credentials, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const loginResponse = await axios.post('api/login', {
+                email: credentials.email,
+                password: credentials.password
+            });
+
+            localStorage.setItem('token', loginResponse.data.token);
+            setIsAuthenticated(true);
+            navigate('home');
+            return null;
+        } catch (e: any) {
+            const message = e?.response?.data?.message || 'Unexpected error occurred';
+            console.log('register failed: ' + message);
+            return message;
         }
-    }
+    };
+
 
     const logout = () => {
         setIsAuthenticated(false)

@@ -23,22 +23,30 @@ const RegistrationPage = () => {
         repeatPassword: "",
         sex: false,
     })
+    const [error, setError] = useState<string | null>(null);
     const {register} = useAuth();
 
-    const submitHandler = (event) => {
-        event.preventDefault()
-        const {repeatPassword, ...registerData} = userInfo;
-        console.log(registerData)
-        register(registerData)
-    }
+    const submitHandler = async (event) => {
+        event.preventDefault();
+
+        if (userInfo.password !== userInfo.repeatPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        const { repeatPassword, ...registerData } = userInfo;
+        const errorMsg = await register(registerData);
+        setError(errorMsg);
+    };
 
     const changeInputHandler = (event) => {
-        // console.log('pressed from' + event.target.value)
-       setUserInfo({
-           ...userInfo,
-            [event.target.name]: event.target.value
-       })
-    }
+        const value = event.target.name === 'sex' ? event.target.value === 'true' : event.target.value;
+
+        setUserInfo({
+            ...userInfo,
+            [event.target.name]: value
+        });
+    };
 
     return (
         <div className={cls.container}>
@@ -76,7 +84,7 @@ const RegistrationPage = () => {
                         <option value="true">Male</option>
                         <option value="false">Female</option>
                     </select>
-
+                    {error && <div className={cls.errorMessage}>{error}</div>}
                     <DefaultButton type={DefaultButtonVariant.SUBMIT}>SIGN UP</DefaultButton>
                 </form>
                 <div className={cls.toLoginPage}>
