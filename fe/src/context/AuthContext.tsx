@@ -60,7 +60,7 @@ export const AuthProvider = ({children}) => {
     const register = async (credentials : RegistrationProps) => {
         try{
             const createUserResponse = await axios.post('api/user', credentials);
-            const loginResponse = await axios.post('api/login', {username: credentials.username, password: credentials.password});
+            const loginResponse = await axios.post('api/login', {email: credentials.email, password: credentials.password});
             console.log(loginResponse)
             localStorage.setItem('token', loginResponse.data.token)
             setIsAuthenticated(true)

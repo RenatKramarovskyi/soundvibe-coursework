@@ -28,11 +28,12 @@ const RegistrationPage = () => {
     const submitHandler = (event) => {
         event.preventDefault()
         const {repeatPassword, ...registerData} = userInfo;
+        console.log(registerData)
         register(registerData)
     }
 
     const changeInputHandler = (event) => {
-        console.log('pressed from' + event.target.value)
+        // console.log('pressed from' + event.target.value)
        setUserInfo({
            ...userInfo,
             [event.target.name]: event.target.value

@@ -8,6 +8,7 @@ import CategoryPage from "./pages/concrete-category-page/CategoryPage.tsx";
 import RegistrationPage from "./pages/registration-page/RegistrationPage.tsx";
 import {AuthProvider} from "./context/AuthContext.tsx";
 import PostPage from "./pages/concrete-post-page/PostPage.tsx";
+import AdminPage from "./pages/admin-page/AdminPage.tsx";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
                <Route path={'/'} element={<PrivateRoute/>}>
                    <Route path={'home'} element={<HomePage/>} />
                    <Route path={'profile'} element={<ProfilePage/>} />
+                   <Route path={'admin-panel'} element={<AdminPage/>} />
                    <Route path={'category/:category'} element={<CategoryPage/>} />
                    <Route path={'post/:id'} element={<PostPage/>} />
                </Route>
